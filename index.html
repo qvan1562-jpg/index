@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>APP INTEGRATED PRO</title>
+    <style>
+        :root {
+            --primary: #ff4757;
+            --primary-glow: rgba(255, 71, 87, 0.4);
+            --bg: #0b0c10;
+            --card: #1f2833;
+            --input: #151a21;
+            --text: #c5c6c7;
+            --accent: #45f3ff;
+            --accent-glow: rgba(69, 243, 255, 0.2);
+            --gold: #ffd700;
+            --gold-glow: rgba(255, 215, 0, 0.3);
+            --admin: #a55eea;
+            --admin-glow: rgba(165, 94, 234, 0.3);
+            --success: #2ed573;
+            --warning: #ff9f43;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0; padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* KHU VỰC AUTH BOX */
+        .auth-box {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 25px 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+            border: 1px solid rgba(69, 243, 255, 0.1);
+            margin-top: 40px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 900;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .desc {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .group {
+            margin-bottom: 15px;
+        }
+
+        .group label {
+            display: block;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .card.admin-card .group label {
+            color: var(--admin);
+        }
+
+        .group input, .group select {
+            width: 100%;
+            padding: 12px;
+            background: var(--input);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .group input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .card.admin-card input:focus, .card.admin-card select:focus {
+            border-color: var(--admin);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent) 0%, #00bcff 100%);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(69, 243, 255, 0.2);
+            text-transform: uppercase;
+        }
+
+        .btn:active { transform: scale(0.99); }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--primary) 0%, #c0392b 100%);
+            color: #fff;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #d35400 100%);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(255, 159, 67, 0.3);
+        }
+
+        .btn-admin {
+            background: linear-gradient(135deg, var(--admin) 0%, #8854d0 100%);
+            box-shadow: 0 4px 12px var(--admin-glow);
+            color: #fff;
+        }
+
+        .btn-mini {
+            padding: 5px 8px;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 4px;
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* CONTROL PANEL */
+        #main-panel, #admin-panel {
+            display: none;
+            width: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 15px;
+        }
+
+        .header h1 { font-size: 18px; color: #fff; font-weight: 800; }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge.free { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid #aaa; }
+        .badge.vip { background: rgba(255, 215, 0, 0.1); border: 1px solid var(--gold); color: var(--gold); text-shadow: 0 0 5px var(--gold-glow); }
+        .badge.admin-tier { background: rgba(165, 94, 234, 0.1); border: 1px solid var(--admin); color: var(--admin); text-shadow: 0 0 5px var(--admin-glow); }
+
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.02);
+            position: relative;
+        }
+
+        .card h2 {
+            font-size: 13px; color: #fff; margin-bottom: 12px; display: flex; align-items: center;
+        }
+
+        .card h2::before {
+            content: ''; width: 3px; height: 11px; background: var(--accent); margin-right: 6px;
+            box-shadow: 0 0 6px var(--accent);
+        }
+
+        .card.admin-card h2::before {
+            background: var(--admin);
+            box-shadow: 0 0 6px var(--admin-glow);
+        }
+
+        .status-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--input); padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 6px;
+        }
+
+        /* BẢNG DỮ LIỆU ADMIN */
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            text-align: left;
+            margin-top: 5px;
+            background: var(--input);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            vertical-align: middle;
+        }
+
+        .admin-table th {
+            background: rgba(165, 94, 234, 0.15);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .terminal {
+            background: #000; border-radius: 6px; padding: 10px;
+            font-family: monospace; font-size: 11px; color: #00ff66;
+            white-space: pre-wrap; margin-top: 10px; display: none;
+            max-height: 150px; overflow-y: auto;
+            border-left: 2px solid var(--accent);
+        }
+
+        /* KHU VỰC VUỐT GIA TỐC */
+        .track-zone {
+            width: 100%; height: 140px; background: #000; border-radius: 8px;
+            position: relative; overflow: hidden; border: 1px dashed #333;
+        }
+        .dot { position: absolute; border-radius: 50%; transform: translate(-50%, -50%); }
+        .dot.target { width: 12px; height: 12px; background: var(--primary); left: 50%; top: 30%; box-shadow: 0 0 8px var(--primary); }
+        .dot.start { width: 8px; height: 8px; background: var(--accent); left: 50%; bottom: 15px; box-shadow: 0 0 6px var(--accent); }
+        #result-text { text-align: center; font-size: 12px; font-weight: bold; margin-top: 8px; height: 15px; }
+
+        /* TOAST ALERT */
+        #alert-box {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 100000; width: 85%; max-width: 300px; pointer-events: none;
+        }
+        .my-toast {
+            background: #1f2833; 
+            border-left: 4px solid var(--accent);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 12px 15px; border-radius: 6px; color: #fff; font-size: 12px;
+            margin-bottom: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            text-align: left;
+            font-weight: 500;
+            animation: toastIn 0.25s ease forwards;
+        }
+        .my-toast.vip-toast { border-left-color: var(--gold); }
+        .my-toast.admin-toast { border-left-color: var(--admin); }
+        .my-toast.err-toast { border-left-color: var(--primary); }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .file-input-wrapper {
+            background: var(--input);
+            border: 2px dashed rgba(69, 243, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="alert-box"></div>
+
+    <div class="container">
+        
+        <div id="login-box" class="auth-box">
+            <div class="title">APP INTEGRATED</div>
+            <div class="desc">vui lòng đăng nhập nếu chưa có key vui lòng liên hệ admin : 0346044653</div>
+            
+            <div class="group">
+                <label>Tên tài khoản / ID người dùng</label>
+                <input type="text" id="login-user" placeholder="Nhập ID người dùng...">
+            </div>
+            <div class="group">
+                <label>Key Kích Hoạt</label>
+                <input type="text" id="login-serverkey" placeholder="Nhập Mã Key">
+            </div>
+
+            <div style="background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.03);">
+                <p style="font-size: 10px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 3px;">Mã thiết bị hiện tại (HWID):</p>
+                <p id="current-hwid-display" style="font-family: monospace; font-size: 11px; color: var(--accent); word-break: break-all; font-weight: bold;"></p>
+            </div>
+            
+            <button class="btn" onclick="processLogin()">KÍCH HOẠT HỆ THỐNG KEY</button>
+        </div>
+
+        <div id="admin-panel">
+            <div class="header">
+                <div>
+                    <h1 style="color: var(--admin);">TRUNG TÂM ĐIỀU KHIỂN KEY</h1>
+                    <p style="font-size:11px; color:#888;">Cấp khóa Key & Quản lý thiết bị đã vào</p>
+                </div>
+                <div class="badge admin-tier">ADMIN TỔNG</div>
+            </div>
+
+            <div class="card admin-card" style="background: linear-gradient(135deg, rgba(165, 94, 234, 0.1) 0%, rgba(21, 26, 33, 0.8) 100%); border: 1px solid rgba(165, 94, 234, 0.3);">
+                <h2>📦 Thống kê kho dữ liệu mẫu ẩn</h2>
+                <div style="display: flex; gap: 10px; text-align: center; margin-top: 5px;">
+                    <div style="flex: 1; background: var(--input); padding: 10px; border-radius: 6px; border: 1px solid rgba(255,215,0,0.2);">
+                        <p style="font-size: 11px; color: #888; font-weight: bold;">MẪU VIP ẨN</p>
+                        <p id="cnt-vip-pool" style="font-size: 20px; font-weight: 900; color: var(--gold); margin-top: 2px;">0</p>
+                    </div>
+                    <div style="flex: 1; background: var(--input); padding: 10px; border-radius: 6px; border: 1px solid rgba(69,243,255,0.2);">
+                        <p style="font-size: 11px; color: #888; font-weight: bold;">MẪU THƯỜNG ẨN</p>
+                        <p id="cnt-free-pool" style="font-size: 20px; font-weight: 900; color: var(--accent); margin-top: 2px;">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card admin-card">
+                <h2>Cấp Khóa & Kích Hoạt Key Mới (Random Từ Kho Ẩn)</h2>
+                <div class="group" style="margin-bottom: 10px;">
+                    <label>Tên tài khoản cần cấp</label>
+                    <input type="text" id="adm-new-user" placeholder="vui lòng tạo tên kích hoạt">
+                </div>
+                <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                    <div class="group" style="flex: 1; margin-bottom: 0;">
+                        <label>Cấp độ Key</label>
+                        <select id="adm-new-tier">
+                            <option value="vip">Premium VIP</option>
+                            <option value="free">Bản Thường</option>
+                        </select>
+                    </div>
+                    <div class="group" style="flex: 1; margin-bottom: 0;">
+                        <label>Thời hạn sử dụng</label>
+                        <select id="adm-new-days">
+                            <option value="1">1 Ngày</option>
+                            <option value="7">7 Ngày</option>
+                            <option value="30">30 Ngày</option>
+                            <option value="365">1 Năm (365 Ngày)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="group">
+                    <label>Giới hạn thiết bị đăng nhập song song</label>
+                    <select id="adm-new-max-devices">
+                        <option value="1">Tối đa 1 Thiết bị (Khóa cứng máy đầu)</option>
+                        <option value="2">Tối đa 2 Thiết bị (Dùng chung nhóm nhỏ)</option>
+                        <option value="5">Tối đa 5 Thiết bị (Quản lý nhóm / Team)</option>
+                        <option value="999">Không giới hạn số máy đăng nhập</option>
+                    </select>
+                </div>
+                <button class="btn btn-admin" style="padding: 11px; font-size: 13px;" onclick="executeCreateKeyServer()">KÍCH HOẠT TẠO KEY SERVER</button>
+                
+                <div id="generated-key-display-box" style="display:none; margin-top: 12px; background: #151a21; border: 1px solid var(--admin); padding: 10px; border-radius: 6px; text-align: center;">
+                    <p style="font-size: 11px; color:#aaa; font-weight:bold;">KEY ĐƯỢC BỐC NGẪU NHIÊN THÀNH CÔNG:</p>
+                    <p id="generated-key-string" style="font-size: 18px; font-family: monospace; font-weight: bold; color: var(--gold); margin-top:4px; letter-spacing:1px;"></p>
+                </div>
+            </div>
+
+            <div class="card admin-card">
+                <h2>Danh sách thiết bị đăng nhập & Server Key</h2>
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID User</th>
+                                <th>Mã Server Key</th>
+                                <th>Hạn dùng</th>
+                                <th>Giới hạn máy</th>
+                                <th>Các Thiết bị (HWID)</th>
+                                <th>Hành động quản lý</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-key-list"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card admin-card">
+                <h2>Điều khiển hệ thống</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-warning" style="flex: 1; padding: 10px; font-size:12px;" onclick="resetToDefaultDatabase()">RESET VỀ KEY GỐC</button>
+                    <button class="btn" style="background:#333; color:#fff; padding: 10px; font-size:12px; flex: 1;" onclick="location.reload()">ĐĂNG XUẤT ADMIN</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="main-panel">
+            <div class="header">
+                <div>
+                    <h1>APP INTEGRATED</h1>
+                    <p style="font-size:11px; color:#666;">Trạng thái: Đã xác thực Key thành công</p>
+                </div>
+                <div id="tier-badge" class="badge free">Tài khoản Thường</div>
+            </div>
+
+            <div class="card" style="border: 1px solid rgba(69, 243, 255, 0.2); background: linear-gradient(180deg, var(--card) 0%, rgba(21,26,33,0.6) 100%);">
+                <h2 style="color: #fff;">Thông Tin Bản Quyền & Thời Hạn</h2>
+                <div class="status-item">
+                    <div>🔑 Mã Key Đang Dùng:</div>
+                    <div id="user-key-display" style="font-family: monospace; font-weight: bold; color: var(--accent);">N/A</div>
+                </div>
+                <div class="status-item">
+                    <div>⏳ Thời Gian Hết Hạn:</div>
+                    <div id="user-expire-display" style="font-weight: bold; color: var(--text);">N/A</div>
+                </div>
+                <div class="status-item">
+                    <div>👥 Giới hạn thiết bị:</div>
+                    <div id="user-device-limit-display" style="font-weight: bold; color: var(--success);">0 / 0 Máy</div>
+                </div>
+                <div class="status-item">
+                    <div>🖥️ HWID Thiết Bị Đăng Nhập:</div>
+                    <div id="user-hwid-display" style="font-family: monospace; font-size: 11px; font-weight: bold; color: #aaa; max-width: 180px; word-break: break-all; text-align: right;">N/A</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Trạng Thái Tệp Tin Hệ Thống</h2>
+                <div class="status-item" style="border-left: 3px solid var(--accent);">
+                    <div>📄 AimLock </div>
+                    <div style="color: var(--accent); font-weight:bold;">ĐÃ SẴN SÀNG</div>
+                </div>
+                <div class="status-item" id="file-vip-row" style="border-left: 3px solid #555;">
+                    <div>📄 Fix Rung</div>
+                    <div id="file-status-text" style="color: #777; font-weight: bold;">🔒 YÊU CẦU VIP</div>
+                </div>
+                <div class="status-item" style="border-left: 3px solid var(--success);">
+                    <div>📦 AimbotSuperco</div>
+                    <div id="status-superco" style="color: #777; font-weight:bold;">CHƯA TẢI</div>
+                </div>
+                <div class="status-item" style="border-left: 3px solid var(--success);">
+                    <div>📦 AimBotEasydrag</div>
+                    <div id="status-easydrag" style="color: #777; font-weight: bold;">CHƯA TẢI</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Cấu hình & Tải Tệp Tin Ngoại Vi</h2>
+                <div class="file-input-wrapper">
+                    <span id="upload-status-label" style="font-size: 13px; color: var(--accent); font-weight: bold;">📁 Chọn hoặc kéo tệp cấu hình ngầm vào đây</span>
+                    <input type="file" id="custom-file-loader" accept=".txt,.xml,.settings,.cfg" onchange="processIncomingFile(event)">
+                </div>
+                <div class="status-item">
+                    <div>Phân tích cấu trúc file:</div>
+                    <div id="analysis-result-text" style="color: #888; font-weight: bold;">Chưa có dữ liệu</div>
+                </div>
+                <button class="btn" id="activate-file-btn" disabled style="background: linear-gradient(135deg, #2ed573 0%, #1abc9c 100%); color: #fff; font-size: 13px; padding: 11px; margin-top: 5px;" onclick="activateFileOperation()">KÍCH HOẠT THỰC THI FILE</button>
+            </div>
+
+            <div class="card">
+                <h2>Bảng Điều Khiển Khóa Tọa Độ</h2>
+                
+                <div id="normal-features-zone">
+                    <p style="font-size:11px; color:#aaa; margin-bottom:10px;">⚡ <b>MENU STANDARD (Miễn phí):</b></p>
+                    <div class="group">
+                        <label>Lựa chọn tinh chỉnh cơ bản</label>
+                        <select id="normal-option">
+                            <option value="standard">Tăng Tốc Độ Cảm Ứng Bề Mặt Màn Hình (+50%)</option>
+                            <option value="easydrag">Tải Tài Nguyên File AimBotEasydrag </option>
+                        </select>
+                    </div>
+                    <button class="btn btn-danger" style="padding:11px; font-size:13px;" onclick="executeNormalInject()">KÍCH HOẠT </button>
+                </div>
+
+                <div id="vip-features-zone" style="margin-top:20px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.08); position:relative;">
+                    <div id="vip-lock-layer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(31,40,51,0.96); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border-radius: 6px;">
+                        <p style="color:var(--gold); font-weight:bold; font-size:13px;">🔒 CHẾ ĐỘ VIP KHÓA (SERVER KEY THƯỜNG)</p>
+                        <p style="font-size:11px; color:#888;">Yêu cầu Server Key cấp Premium VIP để mở.</p>
+                    </div>
+
+                    <p style="font-size:11px; color:var(--gold); margin-bottom:10px;">👑 <b>MENU ADVANCED (Cấp Cao VIP):</b></p>
+                    <div class="group">
+                        <label>Hỗ Trợ Kéo Tâm Nâng Cao</label>
+                        <select id="bias-select">
+                            <option value="superco">Kích Hoạt Tài Nguyên File AimbotSuperco</option>
+                            <option value="both">Kích hoạt song song đồng bộ liên kết (.so) nâng cao</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-gold" style="padding:11px; font-size:13px;" onclick="executeVipInject()">KÍCH HOẠT CHẾ ĐỘ NÂNG CAO VIP</button>
+                </div>
+
+                <div class="terminal" id="term-box"></div>
+            </div>
+
+            <div class="card">
+                <div class="track-zone" id="t-zone">
+                    <div class="dot target"></div>
+                    <div class="dot start"></div>
+                </div>
+                <div id="result-text"></div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <p style="font-size:11px; color:#444; text-decoration: underline; cursor: pointer; display: inline-block;" onclick="location.reload()">Đăng xuất thiết bị</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentUser = "";
+        let isVipUser = false;
+        let activeUploadedFileContent = ""; 
+        let deviceHwid = "";
+
+        function initDeviceHwid() {
+            let id = localStorage.getItem('device_hwid_token');
+            if (!id) {
+                const arr = new Uint32Array(4);
+                window.crypto.getRandomValues(arr);
+                id = Array.from(arr, dec => dec.toString(16).padStart(8, '0')).join('-').toUpperCase();
+                localStorage.setItem('device_hwid_token', id);
+            }
+            deviceHwid = id;
+            document.getElementById('current-hwid-display').innerText = id;
+        }
+
+        // KHO SECRET KEY ẨN ĐÃ ĐƯỢC KHÔI PHỤC ĐẦY ĐỦ (30 VIP & 30 FREE)
+        const SECRET_KEY_POOL = {
+            vip: [
+                "VIP_MRIOS_999X", "VIP_KEY_ANTEN_888", "VIP_AIMLOCK_777M", 
+                "VIP_SUPER_666A", "VIP_EASY_555D", "VIP_HEXED_444Q", 
+                "VIP_BYPASS_333Z", "VIP_PROXY_222P", "VIP_REGEDIT_111R",
+                "VIP_INTEGRATED_000K", "VIP_MODMENU_MRNHAT", "VIP_IOS_PREMIUM_99",
+                "VIP_GLOBAL_SERVER_A1", "VIP_LAGFIX_PRO_X", "VIP_HIGH_SENS_88",
+                "VIP_SPEED_RUN_77", "VIP_DATA_INJECT_99", "VIP_BYPASS_GEN2_X",
+                "VIP_IOS17_STABLE_P", "VIP_ANTI_LOG_XYZ", "VIP_FPS_BOOST_60F",
+                "VIP_ULTRA_TOUCH_V4", "VIP_SECURE_LINK_S1", "VIP_CORE_SYSTEM_MX",
+                "VIP_HARDWARE_MOD_7", "VIP_OPTIMIZE_CPU_9", "VIP_MEM_CLEAN_PRO",
+                "VIP_FAST_RESPONSE_5", "VIP_ZERO_DELAY_999", "VIP_MASTER_KEY_2026"
+            ],
+            free: [
+                "FREE_MRIOS_123", "FREE_AIM_456", "FREE_ANTEN_789", 
+                "FREE_LOCK_987", "FREE_EASY_654", "FREE_FIX_321", 
+                "FREE_TRIAL_AAA", "FREE_STABLE_BBB", "FREE_SPEED_CCC",
+                "FREE_NORMAL_DDD", "FREE_TEST_EEE", "FREE_PUBLIC_FFF",
+                "FREE_USER_GUEST_11", "FREE_STARTER_PACK_2", "FREE_BASIC_MOD_03",
+                "FREE_OPEN_TESTER_4", "FREE_COMMUNITY_K9", "FREE_LIGHT_VERSION",
+                "FREE_STABLE_BUILD_8", "FREE_DEFAULT_CFG_7", "FREE_TOUCH_FIX_01",
+                "FREE_SENS_BOOST_U2", "FREE_DELAY_REDUCE", "FREE_LOW_END_DEV3",
+                "FREE_CLEAN_CACHE_5", "FREE_TEST_SERVER_A", "FREE_PUBLIC_RELEASE",
+                "FREE_NEW_USER_2026", "FREE_SAMPLE_KEY_X9", "FREE_WELCOME_GIFT0"
+            ]
+        };
+
+        function updatePoolCounters() {
+            document.getElementById('cnt-vip-pool').innerText = SECRET_KEY_POOL.vip.length;
+            document.getElementById('cnt-free-pool').innerText = SECRET_KEY_POOL.free.length;
+        }
+
+        let systemAccounts = {};
+        const defaultAccounts = {
+            "user01": { 
+                serverKey: "VIP_MRIOS_999X_8888", 
+                tier: "vip",
+                expireDate: "2029-12-31",
+                maxDevices: 2,
+                allowedHwids: []
+            },
+            "user02": { 
+                serverKey: "FREE_MRIOS_123_7777", 
+                tier: "free",
+                expireDate: "2026-06-30", 
+                maxDevices: 1,
+                allowedHwids: []
+            }
+        };
+
+        function loadDatabase() {
+            let localData = localStorage.getItem('srv_key_db');
+            if (localData) {
+                systemAccounts = JSON.parse(localData);
+                for (let user in systemAccounts) {
+                    if (!systemAccounts[user].allowedHwids) systemAccounts[user].allowedHwids = [];
+                    if (!systemAccounts[user].maxDevices) systemAccounts[user].maxDevices = 1;
+                }
+            } else {
+                systemAccounts = JSON.parse(JSON.stringify(defaultAccounts));
+                saveDatabase();
+            }
+        }
+
+        function saveDatabase() {
+            localStorage.setItem('srv_key_db', JSON.stringify(systemAccounts));
+        }
+
+        // RESET VỀ TÀI KHOẢN MẶC ĐỊNH BAN ĐẦU
+        function resetToDefaultDatabase() {
+            if (confirm("Bạn có chắc chắn muốn xóa hết tất cả key đã tạo và quay về dữ liệu key gốc mặc định không?")) {
+                systemAccounts = JSON.parse(JSON.stringify(defaultAccounts));
+                saveDatabase();
+                renderAdminDatabase();
+                showToast("Đã khôi phục danh sách tài khoản mặc định ban đầu!", "admin");
+            }
+        }
+
+        // XÓA TÀI KHOẢN KHỎI HỆ THỐNG
+        function deleteAccount(userKey) {
+            if (confirm(`Bạn có chắc chắn muốn XÓA HOÀN TOÀN tài khoản [${userKey}] ra khỏi server không?`)) {
+                if (systemAccounts[userKey]) {
+                    delete systemAccounts[userKey];
+                    saveDatabase();
+                    renderAdminDatabase();
+                    showToast(`Đã xóa vĩnh viễn tài khoản [${userKey}]!`, "error");
+                }
+            }
+        }
+
+        const ADMIN_ROOT_KEY = "ADMIN_ROOT_KEY";
+
+        function showToast(text, type = 'success') {
+            const container = document.getElementById('alert-box');
+            if(!container) return;
+            const toast = document.createElement('div');
+            toast.className = type === 'vip' ? 'my-toast vip-toast' : (type === 'admin' ? 'my-toast admin-toast' : (type === 'error' ? 'my-toast err-toast' : 'my-toast'));
+            toast.innerText = (type === 'vip' ? '👑 ' : (type === 'admin' ? '⚡ ' : (type === 'error' ? '❌ ' : '✅ '))) + text;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0'; toast.style.transform = 'translateY(-10px)';
+                toast.style.transition = 'all 0.2s ease';
+                setTimeout(() => { toast.remove(); }, 200);
+            }, 2500);
+        }
+
+        function processLogin() {
+            const u = document.getElementById('login-user').value.trim().toLowerCase();
+            const k = document.getElementById('login-serverkey').value.trim();
+            
+            if(!k) { 
+                showToast("Vui lòng điền mã Server Key!", "error"); 
+                return; 
+            }
+
+            if (k === ADMIN_ROOT_KEY) {
+                showToast("Xác thực cổng ADMIN ROOT thành công!", "admin");
+                document.getElementById('login-box').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+                renderAdminDatabase();
+                updatePoolCounters();
+                return;
+            }
+
+            if(!u) {
+                showToast("Vui lòng nhập Tên tài khoản / ID người dùng!", "error");
+                return;
+            }
+
+            const account = systemAccounts[u];
+            
+            if(account && account.serverKey === k) {
+                const todayStr = new Date().toISOString().split('T')[0];
+                if (account.expireDate && todayStr > account.expireDate) {
+                    showToast("Server Key này đã quá hạn sử dụng hệ thống!", "error");
+                    return;
+                }
+
+                if (!account.allowedHwids.includes(deviceHwid)) {
+                    if (account.allowedHwids.length >= account.maxDevices) {
+                        showToast(`Lỗi: Key này đã đạt giới hạn đăng nhập tối đa (${account.maxDevices} máy)!`, "error");
+                        return;
+                    } else {
+                        account.allowedHwids.push(deviceHwid);
+                        saveDatabase();
+                    }
+                }
+
+                currentUser = u;
+                isVipUser = account.tier === "vip";
+                
+                showToast(isVipUser ? "Đăng nhập quyền VIP thành công!" : "Đăng nhập bản Thường thành công!", isVipUser ? "vip" : "success");
+                document.getElementById('login-box').style.display = 'none';
+                document.getElementById('main-panel').style.display = 'block';
+                applyTierUI();
+            } else {
+                showToast("Mã Server Key hoặc ID người dùng không chính xác!", "error");
+            }
+        }
+
+        function executeCreateKeyServer() {
+            const newUser = document.getElementById('adm-new-user').value.trim().toLowerCase();
+            const tier = document.getElementById('adm-new-tier').value;
+            const days = parseInt(document.getElementById('adm-new-days').value);
+            const maxDevices = parseInt(document.getElementById('adm-new-max-devices').value);
+
+            if (!newUser) {
+                showToast("Vui lòng điền Tên tài khoản cần kích hoạt!", "error");
+                return;
+            }
+
+            const pool = SECRET_KEY_POOL[tier];
+            const randomKeyBase = pool[Math.floor(Math.random() * pool.length)];
+            const finalGeneratedKey = randomKeyBase + "_" + Math.floor(1000 + Math.random() * 9000);
+
+            let exp = new Date();
+            exp.setDate(exp.getDate() + days);
+            const expireStr = exp.toISOString().split('T')[0];
+
+            systemAccounts[newUser] = {
+                serverKey: finalGeneratedKey,
+                tier: tier,
+                expireDate: expireStr,
+                maxDevices: maxDevices,
+                allowedHwids: []
+            };
+
+            saveDatabase();
+            renderAdminDatabase();
+            
+            const displayBox = document.getElementById('generated-key-display-box');
+            const displayString = document.getElementById('generated-key-string');
+            displayBox.style.display = "block";
+            displayString.innerText = finalGeneratedKey;
+            displayString.style.color = tier === 'vip' ? 'var(--gold)' : 'var(--accent)';
+
+            document.getElementById('adm-new-user').value = "";
+            showToast(`Random Key thành công cho [${newUser}]!`, "admin");
+        }
+
+        function clearAllDevices(userKey) {
+            if (systemAccounts[userKey]) {
+                systemAccounts[userKey].allowedHwids = [];
+                saveDatabase();
+                renderAdminDatabase();
+                showToast(`Đã làm trống toàn bộ thiết bị của tài khoản [${userKey}]!`, "success");
+            }
+        }
+
+        function renderAdminDatabase() {
+            const tbody = document.getElementById('admin-key-list');
+            tbody.innerHTML = "";
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            for (let user in systemAccounts) {
+                const acc = systemAccounts[user];
+                const tr = document.createElement('tr');
+                const isExpired = todayStr > acc.expireDate;
+                
+                let limitDisplay = acc.maxDevices === 999 ? "Vô hạn" : `${acc.maxDevices} Máy`;
+                let currentCountDisplay = `${acc.allowedHwids.length} đang kết nối`;
+
+                let hwidDisplay = "";
+                if (acc.allowedHwids.length === 0) {
+                    hwidDisplay = `<span style="color:#2ed573; font-weight:bold;">Chưa có máy nào</span>`;
+                } else {
+                    hwidDisplay = `<ol style="padding-left:12px; color:#aaa; font-family:monospace; font-size:10px;">` + 
+                        acc.allowedHwids.map((h, i) => `<li style="margin-bottom:2px; word-break:break-all;">Máy ${i+1}: ${h}</li>`).join('') + 
+                        `</ol>`;
+                }
+
+                let clearBtn = acc.allowedHwids.length > 0
+                    ? `<button class="btn-mini btn-danger" onclick="clearAllDevices('${user}')">Xóa Sạch Máy</button>`
+                    : `<span style="color:#666; font-size:10px; display:block; margin-bottom:5px; text-align:center;">Trống thiết bị</span>`;
+
+                tr.innerHTML = `
+                    <td style="color:#fff; font-weight:bold;">${user}</td>
+                    <td style="font-family:monospace; color: ${acc.tier === 'vip' ? 'var(--gold)' : 'var(--accent)'};">${acc.serverKey}</td>
+                    <td style="color: ${isExpired ? 'var(--primary)' : '#aaa'}">${acc.expireDate} ${isExpired ? '<br>(Hết hạn)' : ''}</td>
+                    <td style="color:#fff; font-weight:bold;">${limitDisplay}<br><span style="font-size:10px; font-weight:normal; color:#888;">(${currentCountDisplay})</span></td>
+                    <td>${hwidDisplay}</td>
+                    <td>
+                        ${clearBtn}
+                        <button class="btn-mini" style="background:#4b4b4b; color:#fff;" onclick="deleteAccount('${user}')">Xóa Key Vĩnh Viễn</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function applyTierUI() {
+            const account = systemAccounts[currentUser];
+            const isVip = account.tier === "vip";
+            
+            document.getElementById('user-key-display').innerText = account.serverKey;
+            document.getElementById('user-hwid-display').innerText = deviceHwid;
+            
+            const maxText = account.maxDevices === 999 ? "Không giới hạn" : `${account.maxDevices} Máy`;
+            document.getElementById('user-device-limit-display').innerText = `${account.allowedHwids.length} / ${maxText}`;
+
+            const today = new Date();
+            const expDate = new Date(account.expireDate);
+            const timeDiff = expDate.getTime() - today.getTime();
+            const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            
+            const expireDisplayEl = document.getElementById('user-expire-display');
+            if (daysLeft > 0) {
+                expireDisplayEl.innerText = `${account.expireDate} (Còn ${daysLeft} ngày)`;
+                expireDisplayEl.style.color = isVip ? "var(--gold)" : "var(--success)";
+            } else {
+                expireDisplayEl.innerText = `${account.expireDate} (Đã hết hạn)`;
+                expireDisplayEl.style.color = "var(--primary)";
+            }
+
+            document.getElementById('tier-badge').className = isVip ? "badge vip" : "badge free";
+            document.getElementById('tier-badge').innerText = isVip ? "Thành viên VIP" : "Tài khoản Thường";
+            document.getElementById('vip-lock-layer').style.display = isVip ? 'none' : 'flex';
+            document.getElementById('file-status-text').innerText = isVip ? "ĐÃ MỞ KHÓA (VIP)" : "🔒 KHÓA (CẦN VIP)";
+            document.getElementById('file-status-text').style.color = isVip ? "var(--accent)" : "#777";
+            document.getElementById('file-vip-row').style.borderLeftColor = isVip ? "var(--accent)" : "#555";
+        }
+
+        function processIncomingFile(event) {
+            const selectedFile = event.target.files[0];
+            if (!selectedFile) return;
+
+            document.getElementById('upload-status-label').innerText = `📄 ${selectedFile.name}`;
+            const fileReader = new FileReader();
+            
+            fileReader.onload = function(e) {
+                activeUploadedFileContent = e.target.result;
+                const textLower = activeUploadedFileContent.toLowerCase();
+                const analysisContainer = document.getElementById('analysis-result-text');
+                
+                if (textLower.includes('sens') || textLower.includes('aim') || textLower.includes('lock')) {
+                    analysisContainer.innerText = "Hợp lệ (Mã hóa thích ứng)";
+                    analysisContainer.style.color = "#00ff66";
+                } else {
+                    analysisContainer.innerText = "Cấu trúc lạ (Vẫn cho phép nạp)";
+                    analysisContainer.style.color = "#ff9f43";
+                }
+                
+                document.getElementById('activate-file-btn').disabled = false;
+                showToast("Đã đọc phân tích tệp tin thành công!");
+            };
+            
+            fileReader.readAsText(selectedFile);
+        }
+
+        function activateFileOperation() {
+            if (!activeUploadedFileContent) return;
+            const term = document.getElementById('term-box');
+            term.style.display = 'block';
+            
+            term.innerText = "👉 [HỆ THỐNG] Đọc dữ liệu dòng lệnh tệp tin cấu hình ngoại vi...\n";
+            setTimeout(() => {
+                term.innerText += `[OK] Đã phân tích dung lượng ký tự: ${activeUploadedFileContent.length} bytes\n`;
+                term.innerText += `[OK] Thiết lập biến môi trường bổ trợ thành công!\n🔥 HOÀN THÀNH: File đã hoạt động ngầm cục bộ!`;
+                showToast("Kích hoạt hoạt động của file thành công!", "success");
+            }, 600);
+        }
+
+        function executeNormalInject() {
+            const opt = document.getElementById('normal-option').value;
+            const term = document.getElementById('term-box');
+            term.style.display = 'block';
+            
+            term.innerText = "👉 [STANDARD SYSTEM] Khởi chạy biến môi trường cục bộ...\n";
+            
+            if (opt === 'easydrag') {
+                setTimeout(() => {
+                    term.innerText += "[OK] Đang phân tích cấu trúc tài nguyên mở rộng...\n";
+                    term.innerText += "[OK] Nhận diện định dạng tài nguyên: UnityZGS 5.x.x Resources\n";
+                    term.innerText += "🔥 HOÀN THÀNH: Dữ liệu tệp AimBotEasydrag đã sẵn sàng ngầm.";
+                    document.getElementById('status-easydrag').innerText = "ĐẦY ĐỦ (CỤC BỘ)";
+                    document.getElementById('status-easydrag').style.color = "var(--success)";
+                    showToast("Kích hoạt AimBotEasydrag thành công!");
+                }, 500);
+            } else {
+                setTimeout(() => {
+                    term.innerText += "[OK] Đồng bộ thành công tệp cấu hình AimLock\n🔥 HOÀN THÀNH: Trình mô phỏng hoạt động ổn định!";
+                    showToast("Kích hoạt thành công!");
+                }, 500);
+            }
+        }
+
+        function executeVipInject() {
+            if(systemAccounts[currentUser].tier !== "vip") return;
+            const opt = document.getElementById('bias-select').value;
+            const term = document.getElementById('term-box');
+            term.style.display = 'block';
+            
+            term.innerText = "👉 [ADVANCED SYSTEM] Đang giải nén lưới tọa độ nâng cao...\n";
+            
+            setTimeout(() => {
+                if (opt === 'superco' || opt === 'both') {
+                    term.innerText += "[VIP] Phân tích cấu trúc thư viện mã máy: AimbotSuperco\n";
+                    term.innerText += "[VIP] Đã tải các hàm: aimbot.module(), ZGS.SecureBot(), AntiAim\n";
+                    document.getElementById('status-superco').innerText = "ĐẦY ĐỦ (VIP)";
+                    document.getElementById('status-superco').style.color = "var(--gold)";
+                }
+                if (opt === 'both') {
+                    term.innerText += "[VIP] Đồng bộ song song tệp tài nguyên: AimBotEasydrag\n";
+                    document.getElementById('status-easydrag').innerText = "ĐẦY ĐỦ (VIP)";
+                    document.getElementById('status-easydrag').style.color = "var(--gold)";
+                }
+                term.innerText += "🔥 HOÀN THÀNH: Đã tối ưu hóa độ nhạy VIP toàn diện!";
+                showToast("Kích hoạt chế độ VIP thành công!", "vip");
+            }, 600);
+        }
+
+        window.onload = function() {
+            initDeviceHwid();
+            loadDatabase();
+        };
+
+        const zone = document.getElementById('t-zone');
+        const res = document.getElementById('result-text');
+        let sy = 0, st = 0;
+
+        if(zone) {
+            zone.addEventListener('touchstart', (e) => { sy = e.touches[0].clientY; st = Date.now(); });
+            zone.addEventListener('touchend', (e) => {
+                let distance = sy - e.changedTouches[0].clientY;
+                let duration = Date.now() - st;
+                if(distance > 35) {
+                    let speed = Math.round((distance / duration) * 10);
+                    const isVip = systemAccounts[currentUser] && systemAccounts[currentUser].tier === "vip";
+                    if(!isVip) speed = Math.round(speed * 0.65);
+                    if(isVip) {
+                        if(speed >= 14 && speed <= 22) {
+                            res.innerText = `👑 Đồng bộ tối đa (Tốc độ VIP: ${speed}) -> Khớp đường cong mượt 100%`;
+                            res.style.color = 'var(--accent)';
+                        } else {
+                            res.innerText = `👑 Lực kéo lệch biên độ (Tốc độ VIP: ${speed}) -> Hãy điều chỉnh lại lực cơ tay`;
+                            res.style.color = 'var(--primary)';
+                        }
+                    } else {
+                        res.innerText = `⚠️ Bản thường trễ chu kỳ (Tốc độ: ${speed}) -> Yêu cầu tần số quét VIP để mở khóa`;
+                        res.style.color = '#ff9f43';
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
